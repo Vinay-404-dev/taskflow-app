@@ -3,7 +3,7 @@
 A full-stack task manager web application built with **Node.js + Express** backend and **Vanilla HTML/CSS/JS** frontend.
 
 🌐 **Live Demo:** [kaleidoscopic-creponne-017bea.netlify.app](https://kaleidoscopic-creponne-017bea.netlify.app)  
-⚙️ **API Base URL:** [taskflow-api-l76n.onrender.com](https://taskflow-api-l76n.onrender.com)
+⚙️ **API Base URL:** [taskflow-api-l76n.onrender.com/api/tasks](https://taskflow-api-l76n.onrender.com/api/tasks)
 
 ---
 
