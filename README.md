@@ -1,76 +1,134 @@
-# TaskFlow — Task Manager API + UI
+# TaskFlow — Task Manager
 
-A full-stack Task Manager with a REST API backend (Express + SQLite) and a premium dark-mode frontend.
+A full-stack task manager web application built with **Node.js + Express** backend and **Vanilla HTML/CSS/JS** frontend.
+
+🌐 **Live Demo:** [kaleidoscopic-creponne-017bea.netlify.app](https://kaleidoscopic-creponne-017bea.netlify.app)  
+⚙️ **API Base URL:** [taskflow-api-l76n.onrender.com](https://taskflow-api-l76n.onrender.com)
 
 ---
 
-## 🚀 Getting Started
+## Features
 
-### 1. Start the Backend
+- Create, Read, Update, Delete tasks
+- Toggle task status — Pending ↔ Completed
+- Filter tasks — All / Pending / Completed
+- Edit tasks via modal
+- Toast notifications for all actions
+- Input validation — empty title blocked
+- Persistent storage via JSON file
+- Premium dark-mode UI with animations
 
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Frontend | HTML, CSS, JavaScript (Vanilla) |
+| Backend | Node.js, Express.js |
+| Database | JSON file (fs module) |
+| Hosting (Frontend) | Netlify |
+| Hosting (Backend) | Render |
+
+---
+
+## Project Structure
+
+```
+taskflow-app/
+├── backend/
+│   ├── server.js
+│   ├── routes/
+│   │   └── tasks.js
+│   └── package.json
+├── frontend/
+│   ├── index.html
+│   ├── style.css
+│   └── app.js
+├── .gitignore
+└── README.md
+```
+
+---
+
+## Getting Started (Local)
+
+### 1. Clone the repo
+```bash
+git clone https://github.com/Vinay-404-dev/taskflow-app.git
+cd taskflow-app
+```
+
+### 2. Start the Backend
 ```bash
 cd backend
 npm install
 node server.js
 ```
+Server runs at: `http://localhost:3000`
 
-Server starts at **http://localhost:3000**
-
-### 2. Open the Frontend
-
-Open `frontend/index.html` directly in your browser (or use VS Code Live Server).
+### 3. Open the Frontend
+Open `frontend/index.html` directly in your browser.
 
 ---
 
-## 📡 API Reference
+## API Reference
 
-**Base URL:** `http://localhost:3000/api`
+**Base URL (Local):** `http://localhost:3000/api`  
+**Base URL (Production):** `https://taskflow-api-l76n.onrender.com/api`
 
 ### Task Object
-
 ```json
 {
   "id": 1,
   "title": "Buy groceries",
-  "description": "Milk, eggs, bread",
+  "description": "Milk and eggs",
   "status": "pending",
-  "created_at": "2026-03-20 06:55:00"
+  "created_at": "2026-03-20T07:00:00.000Z"
 }
 ```
 
-`status` is either `"pending"` or `"completed"`.
-
 ---
 
-### Endpoints
-
-#### `GET /api/tasks`
-List all tasks (newest first).
+### `GET /api/tasks`
+Returns all tasks, newest first.
 
 ```bash
-curl http://localhost:3000/api/tasks
+curl https://taskflow-api-l76n.onrender.com/api/tasks
 ```
 
-**Response:** `200 OK` — array of task objects.
+**Response:** `200 OK`
+```json
+[
+  {
+    "id": 2,
+    "title": "Write report",
+    "description": "",
+    "status": "pending",
+    "created_at": "2026-03-20T07:05:50.693Z"
+  }
+]
+```
 
 ---
 
-#### `POST /api/tasks`
+### `POST /api/tasks`
 Create a new task.
 
 ```bash
-curl -X POST http://localhost:3000/api/tasks \
+curl -X POST https://taskflow-api-l76n.onrender.com/api/tasks \
   -H "Content-Type: application/json" \
-  -d '{"title": "Buy groceries", "description": "Milk, eggs, bread"}'
+  -d '{"title": "Buy groceries", "description": "Milk and eggs"}'
 ```
 
-| Field | Type | Required | Notes |
-|-------|------|----------|-------|
-| `title` | string | ✅ Yes | Cannot be empty |
-| `description` | string | ❌ No | Defaults to `""` |
+**Body:**
+| Field | Type | Required |
+|-------|------|----------|
+| `title` | string | ✅ Yes |
+| `description` | string | ❌ No |
 
-**Response:** `201 Created` — the new task object.  
-**Error:** `400 Bad Request` if `title` is missing or blank.
+**Response:** `201 Created`  
+**Error:** `400` if title is empty
 
 ```json
 { "error": "Title is required and cannot be empty." }
@@ -78,58 +136,59 @@ curl -X POST http://localhost:3000/api/tasks \
 
 ---
 
-#### `PUT /api/tasks/:id`
+### `PUT /api/tasks/:id`
 Update a task's title, description, or status.
 
 ```bash
-curl -X PUT http://localhost:3000/api/tasks/1 \
+curl -X PUT https://taskflow-api-l76n.onrender.com/api/tasks/1 \
   -H "Content-Type: application/json" \
-  -d '{"title": "Buy groceries and fruit", "status": "completed"}'
+  -d '{"title": "Updated title", "description": "New desc"}'
 ```
 
-| Field | Type | Notes |
-|-------|------|-------|
-| `title` | string | Cannot be empty if provided |
-| `description` | string | Optional |
+**Body (all optional):**
+| Field | Type | Validation |
+|-------|------|------------|
+| `title` | string | Cannot be empty |
+| `description` | string | — |
 | `status` | string | Must be `"pending"` or `"completed"` |
 
-**Response:** `200 OK` — updated task.  
-**Error:** `400` for validation failure, `404` if task not found.
+**Response:** `200 OK` — updated task  
+**Error:** `400` for validation, `404` if not found
 
 ---
 
-#### `PATCH /api/tasks/:id/toggle`
-Toggle a task's status between `pending` and `completed`.
+### `PATCH /api/tasks/:id/toggle`
+Toggle status between `pending` and `completed`.
 
 ```bash
-curl -X PATCH http://localhost:3000/api/tasks/1/toggle
+curl -X PATCH https://taskflow-api-l76n.onrender.com/api/tasks/1/toggle
 ```
 
-**Response:** `200 OK` — updated task.  
-**Error:** `404` if task not found.
+**Response:** `200 OK` — updated task  
+**Error:** `404` if not found
 
 ---
 
-#### `DELETE /api/tasks/:id`
+### `DELETE /api/tasks/:id`
 Delete a task permanently.
 
 ```bash
-curl -X DELETE http://localhost:3000/api/tasks/1
+curl -X DELETE https://taskflow-api-l76n.onrender.com/api/tasks/1
 ```
 
 **Response:** `200 OK`
 ```json
 { "message": "Task 1 deleted successfully." }
 ```
-**Error:** `404` if task not found.
+**Error:** `404` if not found
 
 ---
 
-#### `GET /api/health`
+### `GET /api/health`
 Health check endpoint.
 
 ```bash
-curl http://localhost:3000/api/health
+curl https://taskflow-api-l76n.onrender.com/api/health
 ```
 ```json
 { "status": "ok", "timestamp": "2026-03-20T07:00:00.000Z" }
@@ -137,42 +196,31 @@ curl http://localhost:3000/api/health
 
 ---
 
-## 🗂 Project Structure
+## Validation Rules
 
-```
-pulsing-photosphere/
-├── backend/
-│   ├── server.js          # Express server + SQLite init
-│   ├── routes/
-│   │   └── tasks.js       # All CRUD route handlers
-│   ├── tasks.db           # Auto-generated SQLite database
-│   └── package.json
-├── frontend/
-│   ├── index.html         # Single-page app
-│   ├── style.css          # Dark mode glassmorphism styles
-│   └── app.js             # API integration + UI logic
-└── README.md
-```
-
----
-
-## ✅ Validation Rules
-
-| Rule | HTTP Status |
+| Rule | Status Code |
 |------|------------|
 | `title` missing or empty on POST | `400` |
-| `title` empty string on PUT | `400` |
-| Invalid `status` value on PUT | `400` |
+| `title` is empty string on PUT | `400` |
+| `status` is invalid value on PUT | `400` |
 | Task ID not found | `404` |
 
 ---
 
-## 🎨 Frontend Features
+## Deployment
 
-- **Add tasks** with title and description
-- **Toggle complete** — click the circle checkbox
-- **Edit tasks** — in-place modal editor
-- **Delete tasks** — animated removal
-- **Filter tabs** — All / Pending / Completed
-- **Toast notifications** for all actions
-- **Stats header** showing total and completed counts
+### Backend — Render
+- **Root Directory:** `backend`
+- **Build Command:** `npm install`
+- **Start Command:** `node server.js`
+
+### Frontend — Netlify
+- **Base Directory:** `frontend`
+- **Build Command:** *(none)*
+- **Publish Directory:** `frontend`
+
+---
+
+## License
+
+MIT
